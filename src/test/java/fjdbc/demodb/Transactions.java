@@ -12,11 +12,7 @@ import static fj.P.p;
 public final class Transactions {
 
   public static final Transaction<Void, Void> createSchema =
-    new Transaction<Void, Void>() {
-      @Override
-      public TransactionIsolation getIsolation() {
-        return TransactionIsolation.serializable;
-      }
+    new Transaction.Serializable<Void, Void>() {
       @Override
       public Void run(TransactionContext context, Void aVoid) throws SQLException {
         context.execute(Statements.createAccountTable);
@@ -25,11 +21,7 @@ public final class Transactions {
     };
 
   public static final Transaction<Void, Void> dropSchema =
-    new Transaction<Void, Void>() {
-      @Override
-      public TransactionIsolation getIsolation() {
-        return TransactionIsolation.serializable;
-      }
+    new Transaction.Serializable<Void, Void>() {
       @Override
       public Void run(TransactionContext context, Void aVoid) throws SQLException {
         context.execute(Statements.dropAccountTable);
@@ -38,11 +30,7 @@ public final class Transactions {
     };
 
   public static final Transaction<P3<Integer, Integer, BigDecimal>, Void> transfer =
-    new Transaction<P3<Integer, Integer, BigDecimal>, Void>() {
-      @Override
-      public TransactionIsolation getIsolation() {
-        return TransactionIsolation.serializable;
-      }
+    new Transaction.Serializable<P3<Integer, Integer, BigDecimal>, Void>() {
       @Override
       public Void run(TransactionContext context, P3<Integer, Integer, BigDecimal> params) throws SQLException {
         context.execute(Statements.modifyBalance, p(params._1(), params._3().negate()));
