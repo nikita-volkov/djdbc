@@ -7,6 +7,9 @@ import java.sql.SQLException;
  * It is abstracted away from the notion of database connections or
  * any other kind of resources.
  * All you deal with is the structure of the transaction and that's it.
+ * It also abstracts away from the concurrent transaction conflicts,
+ * also known as serialization errors,
+ * by automatically retrying the transaction when they arise.
  *
  * @param <params> The input parameters
  * @param <result> The result
@@ -23,11 +26,12 @@ public interface Transaction<params, result> {
    */
   TransactionIsolation getIsolation();
   /**
-   * Implementation of the transaction.
+   * The body of the transaction.
    * The implementation of this method must not contain any
    * effects except for those that the {@code context} parameter provides.
    * The reason is that the code in this method may get executed multiple times
-   * in case concurrent transaction conflicts arise.
+   * in case concurrent transaction conflicts arise
+   * (e.g., SQL State "40001" of PostgreSQL).
    */
   result run(TransactionContext context, params params) throws SQLException;
 
