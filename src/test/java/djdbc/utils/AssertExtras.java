@@ -1,4 +1,4 @@
-package fjdbc.utils;
+package djdbc.utils;
 
 import fj.F0;
 import org.junit.Assert;

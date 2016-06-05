@@ -1,6 +1,6 @@
-package fjdbc.drivers;
+package djdbc.drivers;
 
-import fjdbc.Driver;
+import djdbc.Driver;
 
 import java.sql.*;
 

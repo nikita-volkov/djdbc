@@ -3,18 +3,18 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.nikita-volkov</groupId>
-  <artifactId>fjdbc</artifactId>
+  <artifactId>djdbc</artifactId>
   <packaging>jar</packaging>
   <version>1</version>
   
-  <name>FJDBC</name>
-  <description>Functional abstraction over JDBC</description>
-  <url>http://github.com/nikita-volkov/fjdbc</url>
+  <name>djdbc</name>
+  <description>Declarative abstraction over JDBC</description>
+  <url>http://github.com/nikita-volkov/djdbc</url>
 
   <licenses>
     <license>
       <name>MIT/X11</name>
-      <url>http://www.github.com/nikita-volkov/fjdbc/LICENSE</url>
+      <url>http://www.github.com/nikita-volkov/djdbc/LICENSE</url>
     </license>
   </licenses>
 
@@ -27,9 +27,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:nikita-volkov/fjdbc.git</connection>
-    <url>scm:git:git@github.com:nikita-volkov/fjdbc.git</url>
-    <developerConnection>scm:git:git@github.com:nikita-volkov/fjdbc.git</developerConnection>
+    <connection>scm:git:git@github.com:nikita-volkov/djdbc.git</connection>
+    <url>scm:git:git@github.com:nikita-volkov/djdbc.git</url>
+    <developerConnection>scm:git:git@github.com:nikita-volkov/djdbc.git</developerConnection>
   </scm>
 
   <distributionManagement>

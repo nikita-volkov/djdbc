@@ -1,8 +1,8 @@
-package fjdbc.demodb;
+package djdbc.demodb;
 
 import fj.data.Option;
-import fjdbc.*;
-import fjdbc.drivers.*;
+import djdbc.*;
+import djdbc.drivers.*;
 
 import java.io.*;
 import java.math.BigDecimal;

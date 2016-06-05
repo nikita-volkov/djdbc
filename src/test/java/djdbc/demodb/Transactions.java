@@ -1,7 +1,7 @@
-package fjdbc.demodb;
+package djdbc.demodb;
 
 import fj.*;
-import fjdbc.*;
+import djdbc.*;
 
 import java.lang.Void;
 import java.math.BigDecimal;

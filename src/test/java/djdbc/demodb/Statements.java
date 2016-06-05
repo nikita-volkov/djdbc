@@ -1,9 +1,9 @@
-package fjdbc.demodb;
+package djdbc.demodb;
 
 import fj.*;
 import fj.data.*;
-import fjdbc.*;
-import fjdbc.Statement;
+import djdbc.*;
+import djdbc.Statement;
 
 import java.lang.Void;
 import java.math.BigDecimal;

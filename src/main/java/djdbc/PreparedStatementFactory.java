@@ -1,4 +1,4 @@
-package fjdbc;
+package djdbc;
 
 import java.sql.*;
 

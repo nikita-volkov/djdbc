@@ -1,4 +1,4 @@
-package fjdbc;
+package djdbc;
 
 import org.apache.commons.pool2.*;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
