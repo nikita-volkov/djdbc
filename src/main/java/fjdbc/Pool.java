@@ -1,22 +1,20 @@
 package fjdbc;
 
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.impl.*;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 
 import java.io.*;
 import java.sql.*;
 
 public class Pool implements Closeable {
 
-  private final ObjectPool<ExtendedConnection> pool;
+  private final GenericObjectPool<ExtendedConnection> pool;
   private final Driver driver;
 
   public Pool(String url, int size, Driver driver) {
     driver.initialize();
     this.driver = driver;
-    final GenericObjectPoolConfig config = new GenericObjectPoolConfig();
-    config.setMaxTotal(size);
-    this.pool = new GenericObjectPool<ExtendedConnection>(new ExtendedConnectionPoolFactory(url), config);
+    this.pool = new GenericObjectPool<ExtendedConnection>(new ExtendedConnectionPoolFactory(url));
+    this.pool.setMaxTotal(size);
   }
   private ExtendedConnection getConnection() throws SQLException {
     try {
