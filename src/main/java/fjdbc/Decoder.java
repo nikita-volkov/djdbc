@@ -51,7 +51,12 @@ public interface Decoder<result> {
     }
     @Override
     final public result decode(Statement statement) throws SQLException {
-      return run(statement.getResultSet());
+      final ResultSet resultSet = statement.getResultSet();
+      try {
+        return run(resultSet);
+      } finally {
+        resultSet.close();
+      }
     }
     public abstract result run(ResultSet resultSet) throws SQLException;
   }
@@ -67,7 +72,12 @@ public interface Decoder<result> {
     }
     @Override
     final public result decode(Statement statement) throws SQLException {
-      return run(statement.getGeneratedKeys());
+      final ResultSet resultSet = statement.getGeneratedKeys();
+      try {
+        return run(resultSet);
+      } finally {
+        resultSet.close();
+      }
     }
     public abstract result run(ResultSet resultSet) throws SQLException;
   }
