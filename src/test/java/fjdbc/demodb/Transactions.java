@@ -1,7 +1,9 @@
 package fjdbc.demodb;
 
+import fj.*;
 import fjdbc.*;
 
+import java.lang.Void;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
@@ -9,49 +11,62 @@ import static fj.P.p;
 
 public final class Transactions {
 
-  public static final Transaction<Void> createSchema =
-    new Transaction<Void>() {
+  public static final Transaction<Void, Void> createSchema =
+    new Transaction<Void, Void>() {
       @Override
-      public Void run(TransactionContext context) throws SQLException {
+      public TransactionIsolation getIsolation() {
+        return TransactionIsolation.serializable;
+      }
+      @Override
+      public Void run(TransactionContext context, Void aVoid) throws SQLException {
         context.execute(Statements.createAccountTable);
         return null;
       }
     };
 
-  public static final Transaction<Void> dropSchema =
-    new Transaction<Void>() {
+  public static final Transaction<Void, Void> dropSchema =
+    new Transaction<Void, Void>() {
       @Override
-      public Void run(TransactionContext context) throws SQLException {
+      public TransactionIsolation getIsolation() {
+        return TransactionIsolation.serializable;
+      }
+      @Override
+      public Void run(TransactionContext context, Void aVoid) throws SQLException {
         context.execute(Statements.dropAccountTable);
         return null;
       }
     };
 
-  public static Transaction<Void> transfer(final int sourceID, final int targetID, final BigDecimal amount) {
-    return new Transaction<Void>() {
+  public static final Transaction<P3<Integer, Integer, BigDecimal>, Void> transfer =
+    new Transaction<P3<Integer, Integer, BigDecimal>, Void>() {
       @Override
-      public Void run(TransactionContext context) throws SQLException {
-        context.execute(Statements.modifyBalance, p(sourceID, amount.negate()));
-        context.execute(Statements.modifyBalance, p(targetID, amount));
+      public TransactionIsolation getIsolation() {
+        return TransactionIsolation.serializable;
+      }
+      @Override
+      public Void run(TransactionContext context, P3<Integer, Integer, BigDecimal> params) throws SQLException {
+        context.execute(Statements.modifyBalance, p(params._1(), params._3().negate()));
+        context.execute(Statements.modifyBalance, p(params._2(), params._3()));
         return null;
       }
     };
-  }
 
   /**
    * Needed for simulation of serialization conflicts.
    */
-  public static Transaction<Void> conflictSimulation(final int sourceID, final int targetID) {
-    return new Transaction<Void>() {
+  public static final Transaction<P2<Integer, Integer>, Void> conflictSimulation =
+    new Transaction<P2<Integer, Integer>, Void>() {
       @Override
-      public Void run(TransactionContext context) throws SQLException {
+      public TransactionIsolation getIsolation() {
+        return transfer.getIsolation();
+      }
+      @Override
+      public Void run(TransactionContext context, P2<Integer, Integer> params) throws SQLException {
         for (int i = 0; i < 100; i++) {
-          context.execute(transfer(sourceID, targetID, new BigDecimal(1)));
+          context.execute(transfer, p(params._1(), params._2(), new BigDecimal(1)));
         }
         return null;
       }
     };
-  }
-
 
 }

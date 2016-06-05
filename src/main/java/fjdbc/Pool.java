@@ -32,16 +32,16 @@ public class Pool implements Closeable {
       throw new Error("Unexpected exception", e);
     }
   }
-  public <result> result execute(Transaction<result> transaction, TransactionIsolation isolation) throws SQLException {
+  public <params, result> result execute(Transaction<params, result> transaction, params params) throws SQLException {
     ExtendedConnection connection = getConnection();
     Connection jdbcConnection = connection.jdbcConnection;
     try {
       final TransactionContext context = new TransactionContext(connection);
       jdbcConnection.setAutoCommit(false);
-      jdbcConnection.setTransactionIsolation(isolation.jdbcIsolation);
+      jdbcConnection.setTransactionIsolation(transaction.getIsolation().jdbcIsolation);
       while (true) {
         try {
-          result result = transaction.run(context);
+          result result = transaction.run(context, params);
           jdbcConnection.commit();
           jdbcConnection.setAutoCommit(true);
           return result;
@@ -56,6 +56,9 @@ public class Pool implements Closeable {
     } finally {
       putConnection(connection);
     }
+  }
+  public <result> result execute(Transaction<Void, result> transaction) throws SQLException {
+    return execute(transaction, null);
   }
   public <params, result> result execute(Statement<params, result> statement, params params) throws SQLException {
     ExtendedConnection connection = getConnection();

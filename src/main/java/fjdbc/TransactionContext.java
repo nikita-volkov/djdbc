@@ -8,8 +8,8 @@ public final class TransactionContext {
   /**
    * Execute another transaction as part of the current transaction.
    */
-  public <result> result execute(Transaction<result> transaction) throws SQLException {
-    return transaction.run(this);
+  public <params, result> result execute(Transaction<params, result> transaction, params params) throws SQLException {
+    return transaction.run(this, params);
   }
   public <params, result> result execute(Statement<params, result> statement, params params) throws SQLException {
     return statement.run(connection, params);

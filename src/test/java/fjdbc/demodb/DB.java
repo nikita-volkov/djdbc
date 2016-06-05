@@ -7,6 +7,8 @@ import fjdbc.drivers.*;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
+import static fj.P.p;
+
 public final class DB {
 
   private final Pool pool;
@@ -24,19 +26,19 @@ public final class DB {
   }
 
   public void createSchema() throws SQLException {
-    pool.execute(Transactions.createSchema, TransactionIsolation.serializable);
+    pool.execute(Transactions.createSchema);
   }
 
   public void dropSchema() throws SQLException {
-    pool.execute(Transactions.dropSchema, TransactionIsolation.serializable);
+    pool.execute(Transactions.dropSchema);
   }
 
   public void transfer(int sourceID, int targetID, BigDecimal amount) throws SQLException {
-    pool.execute(Transactions.transfer(sourceID, targetID, amount), TransactionIsolation.serializable);
+    pool.execute(Transactions.transfer, p(sourceID, targetID, amount));
   }
 
   public void simulateConflict(int sourceID, int targetID) throws SQLException {
-    pool.execute(Transactions.conflictSimulation(sourceID, targetID), TransactionIsolation.serializable);
+    pool.execute(Transactions.conflictSimulation, p(sourceID, targetID));
   }
 
   public Option<BigDecimal> getBalance(int id) throws SQLException {
