@@ -4,6 +4,7 @@ import fj.data.Option;
 import fjdbc.demodb.DB;
 import org.junit.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
@@ -22,8 +23,9 @@ public class DemoDBTests {
   }
 
   @After
-  public void tearDown() throws SQLException {
+  public void tearDown() throws SQLException, IOException {
     db.dropSchema();
+    db.close();
   }
 
   @Test

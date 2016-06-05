@@ -41,6 +41,7 @@ public class DriverTests {
         assertEquals(Option.some(new BigDecimal(2000)), db.getBalance(id2));
       } finally {
         db.dropSchema();
+        db.close();
       }
     }
   }

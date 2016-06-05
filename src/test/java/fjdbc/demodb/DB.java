@@ -4,12 +4,13 @@ import fj.data.Option;
 import fjdbc.*;
 import fjdbc.drivers.*;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
 import static fj.P.p;
 
-public final class DB {
+public final class DB implements Closeable {
 
   private final Pool pool;
 
@@ -53,4 +54,8 @@ public final class DB {
     return pool.execute(Statements.deleteAccount, id) >= 1;
   }
 
+  @Override
+  public void close() throws IOException {
+    pool.close();
+  }
 }
