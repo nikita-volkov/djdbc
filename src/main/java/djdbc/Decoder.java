@@ -3,11 +3,19 @@ package djdbc;
 import java.sql.*;
 import java.sql.Statement;
 
+/**
+ * A specification of how to decode the results of a statement.
+ * You shouldn't directly implement this interface,
+ * instead use one of the provided final or abstract default implementations.
+ */
 public interface Decoder<result> {
   PreparedStatementFactory getPreparedStatementFactory(Connection connection);
   void execute(Statement statement, String sql) throws SQLException;
   result decode(Statement statement) throws SQLException;
 
+  /**
+   * A decoder for statements, which produce no results.
+   */
   Decoder<Void> noResult =
     new Decoder<Void>() {
       @Override
@@ -24,6 +32,10 @@ public interface Decoder<result> {
       }
     };
 
+  /**
+   * A decoder for statements, which affect multiple rows.
+   * Results in the amount of affected rows.
+   */
   Decoder<Integer> rowsAffected =
     new Decoder<Integer>() {
       @Override
@@ -40,6 +52,10 @@ public interface Decoder<result> {
       }
     };
 
+  /**
+   * A decoder for SELECT statements,
+   * which requires the user to specify the result-set parser.
+   */
   abstract class Rows<result> implements Decoder<result> {
     @Override
     public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
@@ -58,9 +74,17 @@ public interface Decoder<result> {
         resultSet.close();
       }
     }
+    /**
+     * Implementation of the rows result-set parser.
+     */
     public abstract result run(ResultSet resultSet) throws SQLException;
   }
 
+  /**
+   * A decoder for INSERT statements,
+   * which have a side-effect of automatically generating values for some columns.
+   * Specifies a decoder for those values.
+   */
   abstract class GeneratedKeys<result> implements Decoder<result> {
     @Override
     public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
@@ -79,6 +103,9 @@ public interface Decoder<result> {
         resultSet.close();
       }
     }
+    /**
+     * Implementation of the generated key result-set parser.
+     */
     public abstract result run(ResultSet resultSet) throws SQLException;
   }
 
