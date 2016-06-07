@@ -35,8 +35,12 @@ public interface Statement<params, result> {
     @Override
     public result run(ExtendedConnection connection, Void aVoid) throws SQLException {
       final java.sql.Statement statement = connection.jdbcConnection.createStatement();
-      decoder.execute(statement, sql);
-      return decoder.decode(statement);
+      try {
+        decoder.execute(statement, sql);
+        return decoder.decode(statement);
+      } finally {
+        statement.close();
+      }
     }
   }
 
