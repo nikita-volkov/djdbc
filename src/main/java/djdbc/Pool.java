@@ -5,11 +5,20 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import java.io.*;
 import java.sql.*;
 
+/**
+ * A pool of connections to the database.
+ */
 public class Pool implements Closeable {
 
   private final GenericObjectPool<ExtendedConnection> pool;
   private final Driver driver;
 
+  /**
+   * Instantiate the pool with a custom driver.
+   * @param url The URL of the database to establish connections too
+   * @param size The size of the pool
+   * @param driver A custom implementation of the driver
+   */
   public Pool(String url, int size, Driver driver) {
     this.driver = driver;
     this.pool = new GenericObjectPool<ExtendedConnection>(new ExtendedConnectionPoolFactory(url));
@@ -17,6 +26,8 @@ public class Pool implements Closeable {
   }
   /**
    * Instantiate the pool using the standard driver.
+   * @param url The URL of the database to establish connections too
+   * @param size The size of the pool
    */
   public Pool(String url, int size) {
     this(url, size, Driver.standard);
@@ -37,6 +48,10 @@ public class Pool implements Closeable {
       throw new Error("Unexpected exception", e);
     }
   }
+  /**
+   * Execute a transaction,
+   * while automatically retrying it in case of a serialization conflict.
+   */
   public <params, result> result execute(Transaction<params, result> transaction, params params) throws SQLException {
     ExtendedConnection connection = getConnection();
     Connection jdbcConnection = connection.jdbcConnection;
@@ -62,9 +77,15 @@ public class Pool implements Closeable {
       putConnection(connection);
     }
   }
+  /**
+   * Execute a transaction, which doesn't take any parameters.
+   */
   public <result> result execute(Transaction<Void, result> transaction) throws SQLException {
     return execute(transaction, null);
   }
+  /**
+   * Execute a single statement.
+   */
   public <params, result> result execute(Statement<params, result> statement, params params) throws SQLException {
     ExtendedConnection connection = getConnection();
     try {
@@ -73,9 +94,16 @@ public class Pool implements Closeable {
       putConnection(connection);
     }
   }
+  /**
+   * Execute a single statement, which doesn't take any parameters.
+   */
   public <result> result execute(Statement<Void, result> statement) throws SQLException {
     return execute(statement, null);
   }
+  /**
+   * Close all the resources associated with this pool:
+   * all the connections, statements, results-sets and etc.
+   */
   @Override
   public void close() throws IOException {
     pool.close();
