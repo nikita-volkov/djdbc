@@ -40,18 +40,18 @@ final class Transactions {
     };
 
   /**
-   * Needed for simulation of serialization conflicts.
+   * Quite far-fetched, but needed for simulation of serialization conflicts, for testing.
    */
-  static final Transaction<P2<Integer, Integer>, Void> conflictSimulation =
-    new Transaction<P2<Integer, Integer>, Void>() {
+  static final Transaction<P4<Integer, Integer, BigDecimal, Integer>, Void> transferMultipleTimes =
+    new Transaction<P4<Integer, Integer, BigDecimal, Integer>, Void>() {
       @Override
       public TransactionIsolation getIsolation() {
         return transfer.getIsolation();
       }
       @Override
-      public Void run(TransactionContext context, P2<Integer, Integer> params) throws SQLException {
-        for (int i = 0; i < 100; i++) {
-          context.execute(transfer, p(params._1(), params._2(), new BigDecimal(1)));
+      public Void run(TransactionContext context, P4<Integer, Integer, BigDecimal, Integer> params) throws SQLException {
+        for (int i = 0; i < params._4(); i++) {
+          context.execute(transfer, p(params._1(), params._2(), params._3()));
         }
         return null;
       }

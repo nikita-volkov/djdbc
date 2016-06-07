@@ -47,7 +47,7 @@ public class DemoDBTests extends TestCase {
         public void run() {
           for (int i = 0; i < 10; i++) {
             try {
-              db.simulateConflict(id1, id2);
+              db.transferMultipleTimes(id1, id2, new BigDecimal(1), 100);
             } catch (SQLException e) {
               throw new Error(e);
             }

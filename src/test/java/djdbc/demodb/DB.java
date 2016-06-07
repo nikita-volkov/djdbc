@@ -25,8 +25,8 @@ public final class DB implements Closeable {
     pool.execute(Transactions.transfer, p(sourceID, targetID, amount));
   }
 
-  public void simulateConflict(int sourceID, int targetID) throws SQLException {
-    pool.execute(Transactions.conflictSimulation, p(sourceID, targetID));
+  public void transferMultipleTimes(int sourceID, int targetID, BigDecimal amount, int times) throws SQLException {
+    pool.execute(Transactions.transferMultipleTimes, p(sourceID, targetID, amount, times));
   }
 
   public Option<BigDecimal> getBalance(int id) throws SQLException {
