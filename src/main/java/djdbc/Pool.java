@@ -15,6 +15,12 @@ public class Pool implements Closeable {
     this.pool = new GenericObjectPool<ExtendedConnection>(new ExtendedConnectionPoolFactory(url));
     this.pool.setMaxTotal(size);
   }
+  /**
+   * Instantiate the pool using the standard driver.
+   */
+  public Pool(String url, int size) {
+    this(url, size, Driver.standard);
+  }
   private ExtendedConnection getConnection() throws SQLException {
     try {
       return pool.borrowObject();
