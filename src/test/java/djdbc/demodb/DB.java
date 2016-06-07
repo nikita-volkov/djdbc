@@ -11,19 +11,7 @@ import static fj.P.p;
 
 public final class DB implements Closeable {
 
-  private final Pool pool;
-
-  DB(Pool pool) {
-    this.pool = pool;
-  }
-
-  public static DB h2() {
-    return new DB(new Pool("jdbc:h2:mem:test", 6));
-  }
-
-  public static DB postgresql() {
-    return new DB(new Pool("jdbc:postgresql:postgres", 6));
-  }
+  private final Pool pool = new Pool("jdbc:h2:mem:test", 6);
 
   public void createSchema() throws SQLException {
     pool.execute(Transactions.createSchema);

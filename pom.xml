@@ -56,12 +56,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>9.4.1208.jre6</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.functionaljava</groupId>
       <artifactId>functionaljava</artifactId>
       <version>[4.5,5)</version>

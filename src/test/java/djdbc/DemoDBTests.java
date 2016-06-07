@@ -9,36 +9,36 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.concurrent.Semaphore;
 
-abstract class DriverTests extends TestCase {
+public class DemoDBTests extends TestCase {
 
-  abstract DB db();
+  private final DB db = new DB();
 
   public void setUp() throws SQLException {
     try {
-      db().dropSchema();
+      db.dropSchema();
     } catch (SQLException ignored) {}
-    db().createSchema();
+    db.createSchema();
   }
 
   public void tearDown() throws SQLException, IOException {
-    db().dropSchema();
-    db().close();
+    db.dropSchema();
+    db.close();
   }
 
   public void testTransfer() throws Exception {
-    int id1 = db().createAccount(new BigDecimal(0));
-    int id2 = db().createAccount(new BigDecimal(0));
-    db().transfer(id1, id2, new BigDecimal(1));
-    assertEquals(Option.some(new BigDecimal(-1)), db().getBalance(id1));
-    assertEquals(Option.some(new BigDecimal(1)), db().getBalance(id2));
-    db().transfer(id1, id2, new BigDecimal(2));
-    assertEquals(Option.some(new BigDecimal(-3)), db().getBalance(id1));
-    assertEquals(Option.some(new BigDecimal(3)), db().getBalance(id2));
+    int id1 = db.createAccount(new BigDecimal(0));
+    int id2 = db.createAccount(new BigDecimal(0));
+    db.transfer(id1, id2, new BigDecimal(1));
+    assertEquals(Option.some(new BigDecimal(-1)), db.getBalance(id1));
+    assertEquals(Option.some(new BigDecimal(1)), db.getBalance(id2));
+    db.transfer(id1, id2, new BigDecimal(2));
+    assertEquals(Option.some(new BigDecimal(-3)), db.getBalance(id1));
+    assertEquals(Option.some(new BigDecimal(3)), db.getBalance(id2));
   }
 
   public void testConflicts() throws Exception {
-    final int id1 = db().createAccount(new BigDecimal(0));
-    final int id2 = db().createAccount(new BigDecimal(0));
+    final int id1 = db.createAccount(new BigDecimal(0));
+    final int id2 = db.createAccount(new BigDecimal(0));
     final Semaphore semaphore = new Semaphore(2);
     semaphore.acquire(2);
     final Runnable runnable =
@@ -47,7 +47,7 @@ abstract class DriverTests extends TestCase {
         public void run() {
           for (int i = 0; i < 10; i++) {
             try {
-              db().simulateConflict(id1, id2);
+              db.simulateConflict(id1, id2);
             } catch (SQLException e) {
               throw new Error(e);
             }
@@ -58,6 +58,6 @@ abstract class DriverTests extends TestCase {
     new Thread(runnable).start();
     new Thread(runnable).start();
     semaphore.acquire(2);
-    assertEquals(Option.some(new BigDecimal(2000)), db().getBalance(id2));
+    assertEquals(Option.some(new BigDecimal(2000)), db.getBalance(id2));
   }
 }
