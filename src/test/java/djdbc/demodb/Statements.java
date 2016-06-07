@@ -14,21 +14,19 @@ import static fj.P.p;
 public final class Statements {
 
   final static Statement<Void, Void> createAccountTable =
-    Statement.Instances.nonParametric(
+    new Statement.NonParametricUnpreparable<Void>(
       "create table account (id serial not null, balance numeric not null, primary key (id))",
-      Decoder.noResult,
-      false
+      Decoder.noResult
     );
 
   final static Statement<Void, Void> dropAccountTable =
-    Statement.Instances.nonParametric(
+    new Statement.NonParametricUnpreparable<Void>(
       "drop table account",
-      Decoder.noResult,
-      false
+      Decoder.noResult
     );
 
   final static Statement<P2<Integer, BigDecimal>, Integer> modifyBalance =
-    Statement.Instances.parametric(
+    new Statement.Parametric<P2<Integer, BigDecimal>, Integer>(
       "update account set balance = balance + ? where id = ?",
       new Encoder<P2<Integer, BigDecimal>>() {
         @Override
@@ -41,7 +39,7 @@ public final class Statements {
     );
 
   final static Statement<Integer, Option<BigDecimal>> getBalance =
-    Statement.Instances.parametric(
+    new Statement.Parametric<Integer, Option<BigDecimal>>(
       "select balance from account where id = ?",
       new Encoder<Integer>() {
         @Override
@@ -62,7 +60,7 @@ public final class Statements {
     );
 
   final static Statement<Void, List<P2<Integer, BigDecimal>>> listAccounts =
-    Statement.Instances.nonParametric(
+    new Statement.NonParametricPreparable<List<P2<Integer, BigDecimal>>>(
       "select id, balance from account",
       new Decoder.Rows<List<P2<Integer, BigDecimal>>>() {
         @Override
@@ -73,12 +71,11 @@ public final class Statements {
           }
           return rows;
         }
-      },
-      true
+      }
     );
 
   final static Statement<BigDecimal, Integer> createAccount =
-    Statement.Instances.parametric(
+    new Statement.Parametric<BigDecimal, Integer>(
       "insert into account (balance) values (?)",
       new Encoder<BigDecimal>() {
         @Override
@@ -96,7 +93,7 @@ public final class Statements {
     );
 
   final static Statement<Integer, Integer> deleteAccount =
-    Statement.Instances.parametric(
+    new Statement.Parametric<Integer, Integer>(
       "delete from account where id = ?",
       new Encoder<Integer>() {
         @Override

@@ -9,41 +9,55 @@ public interface Statement<params, result> {
 
   result run(ExtendedConnection connection, params params) throws SQLException;
 
-  final class Instances {
-    public static <result> Statement<Void, result> nonParametric(final String sql, final Decoder<result> decoder, boolean preparable) {
-      if (preparable) {
-        return new Statement<Void, result>() {
-          @Override
-          public result run(ExtendedConnection connection, Void aVoid) throws SQLException {
-            final PreparedStatement preparedStatement =
-              connection.preparedStatementCache.get(sql, decoder.getPreparedStatementFactory(connection.jdbcConnection));
-            preparedStatement.execute();
-            return decoder.decode(preparedStatement);
-          }
-        };
-      } else {
-        return new Statement<Void, result>() {
-          @Override
-          public result run(ExtendedConnection connection, Void aVoid) throws SQLException {
-            final java.sql.Statement statement = connection.jdbcConnection.createStatement();
-            decoder.execute(statement, sql);
-            return decoder.decode(statement);
-          }
-        };
-      }
+  final class NonParametricPreparable<result> implements Statement<Void, result> {
+    final String sql;
+    final Decoder<result> decoder;
+    public NonParametricPreparable(String sql, Decoder<result> decoder) {
+      this.sql = sql;
+      this.decoder = decoder;
     }
-    public static <params, result> Statement<params, result> parametric(final String sql, final Encoder<params> encoder, final Decoder<result> decoder) {
-      return new Statement<params, result>() {
-        @Override
-        public result run(ExtendedConnection connection, params params) throws SQLException {
-          final PreparedStatement preparedStatement =
-            connection.preparedStatementCache.get(sql, decoder.getPreparedStatementFactory(connection.jdbcConnection));
-          encoder.encodeParams(preparedStatement, params);
-          preparedStatement.execute();
-          return decoder.decode(preparedStatement);
-        }
-      };
+    @Override
+    public result run(ExtendedConnection connection, Void aVoid) throws SQLException {
+      final PreparedStatement preparedStatement =
+        connection.preparedStatementCache.get(sql, decoder.getPreparedStatementFactory(connection.jdbcConnection));
+      preparedStatement.execute();
+      return decoder.decode(preparedStatement);
     }
   }
+
+  final class NonParametricUnpreparable<result> implements Statement<Void, result> {
+    final String sql;
+    final Decoder<result> decoder;
+    public NonParametricUnpreparable(String sql, Decoder<result> decoder) {
+      this.sql = sql;
+      this.decoder = decoder;
+    }
+    @Override
+    public result run(ExtendedConnection connection, Void aVoid) throws SQLException {
+      final java.sql.Statement statement = connection.jdbcConnection.createStatement();
+      decoder.execute(statement, sql);
+      return decoder.decode(statement);
+    }
+  }
+
+  final class Parametric<params, result> implements Statement<params, result> {
+    final String sql;
+    final Encoder<params> encoder;
+    final Decoder<result> decoder;
+    public Parametric(String sql, Encoder<params> encoder, Decoder<result> decoder) {
+      this.sql = sql;
+      this.encoder = encoder;
+      this.decoder = decoder;
+    }
+    @Override
+    public result run(ExtendedConnection connection, params params) throws SQLException {
+      final PreparedStatement preparedStatement =
+        connection.preparedStatementCache.get(sql, decoder.getPreparedStatementFactory(connection.jdbcConnection));
+      encoder.encodeParams(preparedStatement, params);
+      preparedStatement.execute();
+      return decoder.decode(preparedStatement);
+    }
+  }
+
 }
 
