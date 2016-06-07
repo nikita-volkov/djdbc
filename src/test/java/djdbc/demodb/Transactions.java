@@ -9,9 +9,9 @@ import java.sql.SQLException;
 
 import static fj.P.p;
 
-public final class Transactions {
+final class Transactions {
 
-  public static final Transaction<Void, Void> createSchema =
+  static final Transaction<Void, Void> createSchema =
     new Transaction.Serializable<Void, Void>() {
       @Override
       public Void run(TransactionContext context, Void aVoid) throws SQLException {
@@ -20,7 +20,7 @@ public final class Transactions {
       }
     };
 
-  public static final Transaction<Void, Void> dropSchema =
+  static final Transaction<Void, Void> dropSchema =
     new Transaction.Serializable<Void, Void>() {
       @Override
       public Void run(TransactionContext context, Void aVoid) throws SQLException {
@@ -29,7 +29,7 @@ public final class Transactions {
       }
     };
 
-  public static final Transaction<P3<Integer, Integer, BigDecimal>, Void> transfer =
+  static final Transaction<P3<Integer, Integer, BigDecimal>, Void> transfer =
     new Transaction.Serializable<P3<Integer, Integer, BigDecimal>, Void>() {
       @Override
       public Void run(TransactionContext context, P3<Integer, Integer, BigDecimal> params) throws SQLException {
@@ -42,7 +42,7 @@ public final class Transactions {
   /**
    * Needed for simulation of serialization conflicts.
    */
-  public static final Transaction<P2<Integer, Integer>, Void> conflictSimulation =
+  static final Transaction<P2<Integer, Integer>, Void> conflictSimulation =
     new Transaction<P2<Integer, Integer>, Void>() {
       @Override
       public TransactionIsolation getIsolation() {

@@ -11,7 +11,7 @@ import java.sql.*;
 
 import static fj.P.p;
 
-public final class Statements {
+final class Statements {
 
   final static Statement<Void, Void> createAccountTable =
     new Statement.NonParametricUnpreparable<Void>(

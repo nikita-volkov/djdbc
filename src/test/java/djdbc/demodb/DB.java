@@ -14,7 +14,7 @@ public final class DB implements Closeable {
 
   private final Pool pool;
 
-  public DB(Pool pool) {
+  DB(Pool pool) {
     this.pool = pool;
   }
 
