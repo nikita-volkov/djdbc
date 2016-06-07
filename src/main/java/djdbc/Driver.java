@@ -2,6 +2,10 @@ package djdbc;
 
 import java.sql.*;
 
+/**
+ * For known databases the {@link #standard} instance of this interface will suffice.
+ * However, you're free to implement your own in cases, when it doesn't.
+ */
 public interface Driver {
   /**
    * Checks whether the exception represents a transaction conflict.
@@ -9,6 +13,10 @@ public interface Driver {
    */
   boolean detectTransactionConflict(SQLException exception);
 
+  /**
+   * A standard implementation of the Driver interface,
+   * which should do for most databases.
+   */
   Driver standard =
     new Driver() {
       /**
