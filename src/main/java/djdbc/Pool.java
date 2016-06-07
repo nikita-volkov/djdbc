@@ -11,7 +11,6 @@ public class Pool implements Closeable {
   private final Driver driver;
 
   public Pool(String url, int size, Driver driver) {
-    driver.initialize();
     this.driver = driver;
     this.pool = new GenericObjectPool<ExtendedConnection>(new ExtendedConnectionPoolFactory(url));
     this.pool.setMaxTotal(size);
