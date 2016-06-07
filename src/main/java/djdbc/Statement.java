@@ -9,26 +9,10 @@ public interface Statement<params, result> {
 
   result run(ExtendedConnection connection, params params) throws SQLException;
 
-  final class NonParametricPreparable<result> implements Statement<Void, result> {
+  final class Unpreparable<result> implements Statement<Void, result> {
     final String sql;
     final Decoder<result> decoder;
-    public NonParametricPreparable(String sql, Decoder<result> decoder) {
-      this.sql = sql;
-      this.decoder = decoder;
-    }
-    @Override
-    public result run(ExtendedConnection connection, Void aVoid) throws SQLException {
-      final PreparedStatement preparedStatement =
-        connection.preparedStatementCache.get(sql, decoder.getPreparedStatementFactory(connection.jdbcConnection));
-      preparedStatement.execute();
-      return decoder.decode(preparedStatement);
-    }
-  }
-
-  final class NonParametricUnpreparable<result> implements Statement<Void, result> {
-    final String sql;
-    final Decoder<result> decoder;
-    public NonParametricUnpreparable(String sql, Decoder<result> decoder) {
+    public Unpreparable(String sql, Decoder<result> decoder) {
       this.sql = sql;
       this.decoder = decoder;
     }
@@ -44,11 +28,11 @@ public interface Statement<params, result> {
     }
   }
 
-  final class Parametric<params, result> implements Statement<params, result> {
+  final class Preparable<params, result> implements Statement<params, result> {
     final String sql;
     final Encoder<params> encoder;
     final Decoder<result> decoder;
-    public Parametric(String sql, Encoder<params> encoder, Decoder<result> decoder) {
+    public Preparable(String sql, Encoder<params> encoder, Decoder<result> decoder) {
       this.sql = sql;
       this.encoder = encoder;
       this.decoder = decoder;
