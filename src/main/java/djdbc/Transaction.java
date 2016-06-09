@@ -59,14 +59,4 @@ public interface Transaction<params, result> {
     }
   }
 
-  /**
-   * A helper for construction of transactions with the "serializable" isolation level.
-   */
-  abstract class Serializable<params, result> implements Transaction<params, result> {
-    @Override
-    final public TransactionIsolation getIsolation() {
-      return TransactionIsolation.serializable;
-    }
-  }
-
 }
