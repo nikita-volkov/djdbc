@@ -1,7 +1,5 @@
 package djdbc;
 
-import org.apache.commons.pool2.impl.GenericObjectPool;
-
 import java.io.*;
 import java.sql.*;
 
@@ -10,7 +8,7 @@ import java.sql.*;
  */
 public class Pool implements Closeable {
 
-  private final GenericObjectPool<ExtendedConnection> pool;
+  private final ExtendedConnectionPool pool;
   private final Driver driver;
 
   /**
@@ -20,9 +18,8 @@ public class Pool implements Closeable {
    * @param driver A custom implementation of the driver
    */
   public Pool(String url, int size, Driver driver) {
+    this.pool = new ExtendedConnectionPool(url, size);
     this.driver = driver;
-    this.pool = new GenericObjectPool<ExtendedConnection>(new ExtendedConnectionPoolFactory(url));
-    this.pool.setMaxTotal(size);
   }
   /**
    * Instantiate the pool using the standard driver.
@@ -32,28 +29,12 @@ public class Pool implements Closeable {
   public Pool(String url, int size) {
     this(url, size, Driver.standard);
   }
-  private ExtendedConnection getConnection() throws SQLException {
-    try {
-      return pool.borrowObject();
-    } catch (SQLException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new Error("Unexpected exception", e);
-    }
-  }
-  private void putConnection(ExtendedConnection connection) {
-    try {
-      pool.returnObject(connection);
-    } catch (Exception e) {
-      throw new Error("Unexpected exception", e);
-    }
-  }
   /**
    * Execute a transaction,
    * while automatically retrying it in case of a serialization conflict.
    */
   public <params, result> result execute(Transaction<params, result> transaction, params params) throws SQLException {
-    ExtendedConnection connection = getConnection();
+    ExtendedConnection connection = pool.getConnection();
     Connection jdbcConnection = connection.jdbcConnection;
     try {
       final TransactionContext context = new TransactionContext(connection);
@@ -74,7 +55,7 @@ public class Pool implements Closeable {
         }
       }
     } finally {
-      putConnection(connection);
+      pool.putConnection(connection);
     }
   }
   /**
@@ -87,11 +68,11 @@ public class Pool implements Closeable {
    * Execute a single statement.
    */
   public <params, result> result execute(Statement<params, result> statement, params params) throws SQLException {
-    ExtendedConnection connection = getConnection();
+    ExtendedConnection connection = pool.getConnection();
     try {
       return statement.run(connection, params);
     } finally {
-      putConnection(connection);
+      pool.putConnection(connection);
     }
   }
   /**

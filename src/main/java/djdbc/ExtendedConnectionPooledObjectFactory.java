@@ -5,9 +5,9 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 import java.sql.DriverManager;
 
-final class ExtendedConnectionPoolFactory extends BasePooledObjectFactory<ExtendedConnection> {
+final class ExtendedConnectionPooledObjectFactory extends BasePooledObjectFactory<ExtendedConnection> {
   private final String url;
-  ExtendedConnectionPoolFactory(String url) {
+  ExtendedConnectionPooledObjectFactory(String url) {
     this.url = url;
   }
   @Override

@@ -7,7 +7,7 @@ final class PreparedStatementCache {
 
   private final HashMap<String, PreparedStatement> map;
 
-  public PreparedStatementCache() {
+  PreparedStatementCache() {
     this.map = new HashMap<String, PreparedStatement>();
   }
 
