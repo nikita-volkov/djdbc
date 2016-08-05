@@ -9,7 +9,7 @@ public interface Statement<params, result> {
 
   result run(ExtendedConnection connection, params params) throws SQLException;
 
-  final class Unpreparable<result> implements Statement<Void, result> {
+  class Unpreparable<result> implements Statement<Void, result> {
     final String sql;
     final Decoder<result> decoder;
     public Unpreparable(String sql, Decoder<result> decoder) {
@@ -28,7 +28,7 @@ public interface Statement<params, result> {
     }
   }
 
-  final class Preparable<params, result> implements Statement<params, result> {
+  class Preparable<params, result> implements Statement<params, result> {
     final String sql;
     final Encoder<params> encoder;
     final Decoder<result> decoder;

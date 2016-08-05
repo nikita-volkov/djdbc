@@ -16,41 +16,41 @@ public interface Decoder<result> {
   /**
    * A decoder for statements, which produce no results.
    */
-  Decoder<Void> noResult =
-    new Decoder<Void>() {
-      @Override
-      public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
-        return new PreparedStatementFactory.Standard(connection);
-      }
-      @Override
-      public void execute(Statement statement, String sql) throws SQLException {
-        statement.execute(sql);
-      }
-      @Override
-      public Void decode(Statement statement) throws SQLException {
-        return null;
-      }
-    };
+  class NoResult implements Decoder<Void> {
+    public static final NoResult i = new NoResult();
+    @Override
+    public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
+      return new PreparedStatementFactory.Standard(connection);
+    }
+    @Override
+    public void execute(Statement statement, String sql) throws SQLException {
+      statement.execute(sql);
+    }
+    @Override
+    public Void decode(Statement statement) throws SQLException {
+      return null;
+    }
+  }
 
   /**
    * A decoder for statements, which affect multiple rows.
    * Results in the amount of affected rows.
    */
-  Decoder<Integer> rowsAffected =
-    new Decoder<Integer>() {
-      @Override
-      public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
-        return new PreparedStatementFactory.Standard(connection);
-      }
-      @Override
-      public void execute(Statement statement, String sql) throws SQLException {
-        statement.execute(sql);
-      }
-      @Override
-      public Integer decode(Statement statement) throws SQLException {
-        return statement.getUpdateCount();
-      }
-    };
+  class RowsAffected implements Decoder<Integer> {
+    public static final RowsAffected i = new RowsAffected();
+    @Override
+    public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
+      return new PreparedStatementFactory.Standard(connection);
+    }
+    @Override
+    public void execute(Statement statement, String sql) throws SQLException {
+      statement.execute(sql);
+    }
+    @Override
+    public Integer decode(Statement statement) throws SQLException {
+      return statement.getUpdateCount();
+    }
+  }
 
   /**
    * A decoder for SELECT statements,

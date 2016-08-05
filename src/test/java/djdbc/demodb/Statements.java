@@ -16,13 +16,13 @@ final class Statements {
   final static Statement<Void, Void> createAccountTable =
     new Statement.Unpreparable<Void>(
       "create table account (id serial not null, balance numeric not null, primary key (id))",
-      Decoder.noResult
+      Decoder.NoResult.i
     );
 
   final static Statement<Void, Void> dropAccountTable =
     new Statement.Unpreparable<Void>(
       "drop table account",
-      Decoder.noResult
+      Decoder.NoResult.i
     );
 
   final static Statement<P2<Integer, BigDecimal>, Integer> modifyBalance =
@@ -35,7 +35,7 @@ final class Statements {
           preparedStatement.setInt(2, params._1());
         }
       },
-      Decoder.rowsAffected
+      Decoder.RowsAffected.i
     );
 
   final static Statement<Integer, Option<BigDecimal>> getBalance =
@@ -62,7 +62,7 @@ final class Statements {
   final static Statement<Void, List<P2<Integer, BigDecimal>>> listAccounts =
     new Statement.Preparable<Void, List<P2<Integer, BigDecimal>>>(
       "select id, balance from account",
-      Encoder.noParams,
+      Encoder.NoParams.i,
       new Decoder.Rows<List<P2<Integer, BigDecimal>>>() {
         @Override
         public List<P2<Integer, BigDecimal>> run(ResultSet resultSet) throws SQLException {
@@ -102,7 +102,7 @@ final class Statements {
           preparedStatement.setInt(1, integer);
         }
       },
-      Decoder.rowsAffected
+      Decoder.RowsAffected.i
     );
 
 }
