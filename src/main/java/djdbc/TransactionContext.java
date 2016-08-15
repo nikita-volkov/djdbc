@@ -11,6 +11,9 @@ public final class TransactionContext {
   public <params, result> result execute(Transaction<params, result> transaction, params params) throws SQLException {
     return transaction.run(this, params);
   }
+  public <result> result execute(Transaction<Void, result> transaction) throws SQLException {
+    return transaction.run(this, null);
+  }
   public <params, result> result execute(Statement<params, result> statement, params params) throws SQLException {
     return statement.run(connection, params);
   }
