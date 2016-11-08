@@ -7,12 +7,16 @@ import java.sql.DriverManager;
 
 final class ExtendedConnectionPooledObjectFactory extends BasePooledObjectFactory<ExtendedConnection> {
   private final String url;
-  ExtendedConnectionPooledObjectFactory(String url) {
+  private final String username;
+  private final String password;
+  ExtendedConnectionPooledObjectFactory(String url, String username, String password) {
     this.url = url;
+    this.username = username;
+    this.password = password;
   }
   @Override
   public ExtendedConnection create() throws Exception {
-    return new ExtendedConnection(DriverManager.getConnection(url));
+    return new ExtendedConnection(DriverManager.getConnection(url, username, password));
   }
   @Override
   public void destroyObject(PooledObject<ExtendedConnection> p) throws Exception {

@@ -13,8 +13,8 @@ final class ExtendedConnectionPool implements Closeable {
 
   private final GenericObjectPool<ExtendedConnection> pool;
 
-  ExtendedConnectionPool(String url, int size) {
-    this.pool = new GenericObjectPool<ExtendedConnection>(new ExtendedConnectionPooledObjectFactory(url));
+  ExtendedConnectionPool(String url, String username, String password, int size) {
+    this.pool = new GenericObjectPool<ExtendedConnection>(new ExtendedConnectionPooledObjectFactory(url, username, password));
     this.pool.setMaxTotal(size);
   }
 

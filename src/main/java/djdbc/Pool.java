@@ -18,7 +18,10 @@ public class Pool implements Closeable {
    * @param driver A custom implementation of the driver
    */
   public Pool(String url, int size, Driver driver) {
-    this.pool = new ExtendedConnectionPool(url, size);
+    this(url, null, null, size, driver);
+  }
+  public Pool(String url, String username, String password, int size, Driver driver) {
+    this.pool = new ExtendedConnectionPool(url, username, password, size);
     this.driver = driver;
   }
   /**
@@ -27,7 +30,10 @@ public class Pool implements Closeable {
    * @param size The size of the pool
    */
   public Pool(String url, int size) {
-    this(url, size, Driver.standard);
+    this(url, null, null, size);
+  }
+  public Pool(String url, String username, String password, int size) {
+    this(url, username, password, size, Driver.standard);
   }
   /**
    * Execute a transaction,
