@@ -12,9 +12,9 @@ final class PreparedStatementCache {
   }
 
   PreparedStatement get(String sql, PreparedStatementFactory preparedStatementFactory) throws SQLException {
-    final PreparedStatement cached = map.get(sql);
+    PreparedStatement cached = map.get(sql);
     if (cached == null) {
-      final PreparedStatement created = preparedStatementFactory.create(sql);
+      PreparedStatement created = preparedStatementFactory.create(sql);
       map.put(sql, created);
       return created;
     } else {

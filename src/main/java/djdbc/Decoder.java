@@ -2,6 +2,7 @@ package djdbc;
 
 import java.sql.*;
 import java.sql.Statement;
+import java.util.*;
 
 /**
  * A specification of how to decode the results of a statement.
@@ -18,14 +19,17 @@ public interface Decoder<result> {
    */
   class NoResult implements Decoder<Void> {
     public static final NoResult i = new NoResult();
+
     @Override
     public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
       return new PreparedStatementFactory.Standard(connection);
     }
+
     @Override
     public void execute(Statement statement, String sql) throws SQLException {
       statement.execute(sql);
     }
+
     @Override
     public Void decode(Statement statement) throws SQLException {
       return null;
@@ -38,14 +42,17 @@ public interface Decoder<result> {
    */
   class RowsAffected implements Decoder<Integer> {
     public static final RowsAffected i = new RowsAffected();
+
     @Override
     public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
       return new PreparedStatementFactory.Standard(connection);
     }
+
     @Override
     public void execute(Statement statement, String sql) throws SQLException {
       statement.execute(sql);
     }
+
     @Override
     public Integer decode(Statement statement) throws SQLException {
       return statement.getUpdateCount();
@@ -61,10 +68,12 @@ public interface Decoder<result> {
     public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
       return new PreparedStatementFactory.Standard(connection);
     }
+
     @Override
     final public void execute(Statement statement, String sql) throws SQLException {
       statement.execute(sql);
     }
+
     @Override
     final public result decode(Statement statement) throws SQLException {
       final ResultSet resultSet = statement.getResultSet();
@@ -74,10 +83,12 @@ public interface Decoder<result> {
         resultSet.close();
       }
     }
+
     /**
      * Implementation of the rows result-set parser.
      */
     public abstract result run(ResultSet resultSet) throws SQLException;
+    
   }
 
   /**
@@ -90,10 +101,12 @@ public interface Decoder<result> {
     public PreparedStatementFactory getPreparedStatementFactory(Connection connection) {
       return new PreparedStatementFactory.GeneratedKeys(connection);
     }
+
     @Override
     final public void execute(Statement statement, String sql) throws SQLException {
       statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
     }
+
     @Override
     final public result decode(Statement statement) throws SQLException {
       final ResultSet resultSet = statement.getGeneratedKeys();
@@ -103,6 +116,7 @@ public interface Decoder<result> {
         resultSet.close();
       }
     }
+
     /**
      * Implementation of the generated key result-set parser.
      */
