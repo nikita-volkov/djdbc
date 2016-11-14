@@ -13,28 +13,34 @@ public class Pool implements Closeable {
 
   /**
    * Instantiate the pool with a custom driver.
-   * @param url The URL of the database to establish connections too
-   * @param size The size of the pool
+   *
+   * @param url    The URL of the database to establish connections too
+   * @param size   The size of the pool
    * @param driver A custom implementation of the driver
    */
   public Pool(String url, int size, Driver driver) {
     this(url, null, null, size, driver);
   }
+
   public Pool(String url, String username, String password, int size, Driver driver) {
     this.pool = new ExtendedConnectionPool(url, username, password, size);
     this.driver = driver;
   }
+
   /**
    * Instantiate the pool using the standard driver.
-   * @param url The URL of the database to establish connections too
+   *
+   * @param url  The URL of the database to establish connections too
    * @param size The size of the pool
    */
   public Pool(String url, int size) {
     this(url, null, null, size);
   }
+
   public Pool(String url, String username, String password, int size) {
     this(url, username, password, size, Driver.standard);
   }
+
   /**
    * Execute a transaction,
    * while automatically retrying it in case of a serialization conflict.
@@ -64,12 +70,14 @@ public class Pool implements Closeable {
       pool.putConnection(connection);
     }
   }
+
   /**
    * Execute a transaction, which doesn't take any parameters.
    */
   public <result> result execute(Transaction<Void, result> transaction) throws SQLException {
     return execute(transaction, null);
   }
+
   /**
    * Execute a single statement.
    */
@@ -81,12 +89,14 @@ public class Pool implements Closeable {
       pool.putConnection(connection);
     }
   }
+
   /**
    * Execute a single statement, which doesn't take any parameters.
    */
   public <result> result execute(Statement<Void, result> statement) throws SQLException {
     return execute(statement, null);
   }
+
   /**
    * Close all the resources associated with this pool:
    * all the connections, statements, results-sets and etc.
