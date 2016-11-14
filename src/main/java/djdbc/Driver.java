@@ -14,6 +14,11 @@ public interface Driver {
   boolean detectTransactionConflict(SQLException exception);
 
   /**
+   * Checks whether the exception is caused due to a connection failure.
+   */
+  boolean detectConnectionFailure(SQLException exception);
+
+  /**
    * A standard implementation of the Driver interface,
    * which should do for most databases.
    */
@@ -26,6 +31,16 @@ public interface Driver {
       @Override
       public boolean detectTransactionConflict(SQLException exception) {
         return exception.getSQLState().equals("40001");
+      }
+
+      /**
+       * Implements the test according to the SQL standard.
+       * https://en.wikibooks.org/wiki/Structured_Query_Language/SQLSTATE
+       */
+      @Override
+      public boolean detectConnectionFailure(SQLException exception) {
+        String sqlState = exception.getSQLState();
+        return sqlState.equals("08000") || sqlState.equals("08003") || sqlState.equals("08006");
       }
     };
 }

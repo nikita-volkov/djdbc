@@ -46,28 +46,36 @@ public class Pool implements Closeable {
    * while automatically retrying it in case of a serialization conflict.
    */
   public <params, result> result execute(Transaction<params, result> transaction, params params) throws SQLException {
-    ExtendedConnection connection = pool.getConnection();
-    Connection jdbcConnection = connection.jdbcConnection;
-    try {
-      final TransactionContext context = new TransactionContext(connection);
-      jdbcConnection.setAutoCommit(false);
-      jdbcConnection.setTransactionIsolation(transaction.getIsolation().jdbcIsolation);
-      while (true) {
-        try {
-          result result = transaction.run(context, params);
-          jdbcConnection.commit();
-          jdbcConnection.setAutoCommit(true);
-          return result;
-        } catch (SQLException e) {
-          jdbcConnection.rollback();
-          if (!driver.detectTransactionConflict(e)) {
+    while (true) {
+      ExtendedConnection connection = pool.getConnection();
+      Connection jdbcConnection = connection.jdbcConnection;
+      try {
+        TransactionContext context = new TransactionContext(connection);
+        jdbcConnection.setAutoCommit(false);
+        jdbcConnection.setTransactionIsolation(transaction.getIsolation().jdbcIsolation);
+        while (true) {
+          try {
+            result result = transaction.run(context, params);
+            jdbcConnection.commit();
             jdbcConnection.setAutoCommit(true);
-            throw e;
+            return result;
+          } catch (SQLException e) {
+            jdbcConnection.rollback();
+            if (!driver.detectTransactionConflict(e)) {
+              jdbcConnection.setAutoCommit(true);
+              throw e;
+            }
           }
         }
+      } catch (SQLException e) {
+        if (!driver.detectConnectionFailure(e)) {
+          throw e;
+        }
+      } finally {
+        if (!jdbcConnection.isClosed()) {
+          pool.putConnection(connection);
+        }
       }
-    } finally {
-      pool.putConnection(connection);
     }
   }
 
@@ -82,11 +90,19 @@ public class Pool implements Closeable {
    * Execute a single statement.
    */
   public <params, result> result execute(Statement<params, result> statement, params params) throws SQLException {
-    ExtendedConnection connection = pool.getConnection();
-    try {
-      return statement.run(connection, params);
-    } finally {
-      pool.putConnection(connection);
+    while (true) {
+      ExtendedConnection connection = pool.getConnection();
+      try {
+        return statement.run(connection, params);
+      } catch (SQLException e) {
+        if (!driver.detectConnectionFailure(e)) {
+          throw e;
+        }
+      } finally {
+        if (!connection.jdbcConnection.isClosed()) {
+          pool.putConnection(connection);
+        }
+      }
     }
   }
 
